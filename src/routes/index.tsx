@@ -5,6 +5,7 @@ import {
   Send, Circle, Droplet, ArrowUpRight, BarChart3, LogIn,
   Check, X, CircleDot,
 } from "lucide-react";
+import zozoLogo from "@/assets/zozo-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -196,54 +197,7 @@ function Dashboard() {
       {/* Sidebar */}
       <aside className="w-[230px] shrink-0 p-4 flex flex-col gap-4">
         <div className="zz-card px-4 py-5 flex flex-col items-center text-center">
-          <svg viewBox="0 0 180 110" className="h-[88px] w-auto" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="zzBldg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="oklch(0.85 0.13 230)" />
-                <stop offset="100%" stopColor="oklch(0.55 0.18 255)" />
-              </linearGradient>
-              <linearGradient id="zzWave" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="oklch(0.78 0.14 235)" />
-                <stop offset="100%" stopColor="oklch(0.6 0.18 250)" />
-              </linearGradient>
-            </defs>
-            {/* Skyline buildings */}
-            <g fill="url(#zzBldg)">
-              <rect x="14"  y="40" width="10" height="38" />
-              <rect x="26"  y="28" width="12" height="50" />
-              <polygon points="40,30 50,18 50,78 40,78" />
-              <rect x="52"  y="22" width="8"  height="56" />
-              <rect x="62"  y="32" width="10" height="46" />
-              <polygon points="74,28 86,16 86,78 74,78" />
-              <rect x="88"  y="24" width="9"  height="54" />
-              <rect x="99"  y="34" width="11" height="44" />
-              <polygon points="112,30 122,20 122,78 112,78" />
-              <rect x="124" y="38" width="9"  height="40" />
-              <rect x="135" y="30" width="11" height="48" />
-              <rect x="148" y="42" width="8"  height="36" />
-            </g>
-            {/* tiny windows accents */}
-            <g fill="oklch(0.18 0.03 250)" opacity="0.55">
-              <rect x="28"  y="36" width="8" height="2" />
-              <rect x="54"  y="32" width="4" height="2" />
-              <rect x="76"  y="32" width="8" height="2" />
-              <rect x="90"  y="34" width="5" height="2" />
-              <rect x="114" y="38" width="6" height="2" />
-              <rect x="137" y="40" width="7" height="2" />
-            </g>
-            {/* wave */}
-            <path
-              d="M6 90 Q 30 78, 54 90 T 102 90 T 150 90 T 174 88 L 174 100 L 6 100 Z"
-              fill="url(#zzWave)"
-            />
-            <path
-              d="M6 96 Q 30 86, 54 96 T 102 96 T 150 96 T 174 94"
-              fill="none"
-              stroke="oklch(0.92 0.06 230)"
-              strokeWidth="1.2"
-              opacity="0.7"
-            />
-          </svg>
+          <img src={zozoLogo} alt="ZOZO SmartFlow logo" className="h-20 w-auto object-contain drop-shadow-[0_4px_18px_oklch(0.55_0.18_240/0.55)]" />
           <div className="mt-2 leading-tight">
             <p className="text-[20px] font-extrabold tracking-tight text-[oklch(0.78_0.14_235)]">ZOZO</p>
             <p className="text-[16px] font-extrabold tracking-tight text-[oklch(0.96_0.01_250)] -mt-1">SmartFlow</p>
