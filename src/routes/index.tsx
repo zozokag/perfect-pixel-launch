@@ -5,6 +5,7 @@ import {
   Send, Circle, Droplet, ArrowUpRight, BarChart3, LogIn,
   Check, X, CircleDot,
 } from "lucide-react";
+import zozoLogo from "@/assets/zozo-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
