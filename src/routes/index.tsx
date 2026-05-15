@@ -197,11 +197,7 @@ function Dashboard() {
       {/* Sidebar */}
       <aside className="w-[230px] shrink-0 p-4 flex flex-col gap-4">
         <div className="zz-card px-4 py-5 flex flex-col items-center text-center">
-          <img src={zozoLogo} alt="ZOZO SmartFlow logo" className="h-20 w-auto object-contain drop-shadow-[0_4px_18px_oklch(0.55_0.18_240/0.55)]" />
-          <div className="mt-2 leading-tight">
-            <p className="text-[20px] font-extrabold tracking-tight text-[oklch(0.78_0.14_235)]">ZOZO</p>
-            <p className="text-[16px] font-extrabold tracking-tight text-[oklch(0.96_0.01_250)] -mt-1">SmartFlow</p>
-          </div>
+          <img src={zozoLogo} alt="ZOZO SmartFlow" className="h-32 w-auto object-contain drop-shadow-[0_6px_22px_oklch(0.55_0.18_240/0.5)]" />
           <p className="mt-2 text-[11px] font-semibold tracking-[0.15em] text-muted-foreground">FX Market Brief</p>
         </div>
 
