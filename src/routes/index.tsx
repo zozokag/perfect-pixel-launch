@@ -250,6 +250,7 @@ function Dashboard() {
 
       {/* Center column */}
       <main className="flex-1 p-4 grid gap-4 grid-cols-1 xl:grid-cols-[1fr_320px]">
+        {view === "daily" ? <DailyBriefPanel /> : (
         <div className="flex flex-col gap-4 min-w-0">
           {/* Top stat row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
