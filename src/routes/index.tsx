@@ -250,133 +250,7 @@ function Dashboard() {
 
       {/* Center column */}
       <main className="flex-1 p-4 grid gap-4 grid-cols-1 xl:grid-cols-[1fr_320px]">
-        {view === "daily" ? <DailyBriefPanel /> : (
-        <div className="flex flex-col gap-4 min-w-0">
-          {/* Top stat row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <GaugeCard />
-            <SessionCard />
-            <RiskCard />
-            <NewsCard />
-          </div>
-
-          {/* Pairs table */}
-          <div className="zz-card p-4">
-            <div className="grid grid-cols-[1.4fr_1fr_0.7fr_0.7fr_0.7fr_1.1fr_1.2fr_1.3fr] items-center gap-3 border-b border-border/60 pb-3 text-[11px] font-bold tracking-[0.18em] text-muted-foreground">
-              <div className="flex items-center gap-1.5"><span className="text-[oklch(0.78_0.14_235)]">▸</span> PÁR</div>
-              <div>HTF BIAS</div>
-              <div className="text-center">SWEEP</div>
-              <div className="text-center">CHoCH</div>
-              <div className="text-center">FVG</div>
-              <div>TREND ERŐ</div>
-              <div>STÁTUSZ</div>
-              <div>TEENDŐ</div>
-            </div>
-
-            {rows.map((r) => (
-              <div
-                key={r.pair}
-                className="grid grid-cols-[1.4fr_1fr_0.7fr_0.7fr_0.7fr_1.1fr_1.2fr_1.3fr] items-center gap-3 border-b border-border/40 py-3 last:border-0 hover:bg-[oklch(0.26_0.035_250/0.5)] transition rounded-md px-1"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Star className="h-4 w-4 fill-[oklch(0.78_0.17_75)] text-[oklch(0.78_0.17_75)]" />
-                  <span className="text-[14px] font-bold">{r.pair}</span>
-                </div>
-                <div>{biasChip(r.bias)}</div>
-                <div className="flex justify-center"><MarkIcon m={r.sweep} /></div>
-                <div className="flex justify-center"><MarkIcon m={r.choch} /></div>
-                <div className="flex justify-center"><MarkIcon m={r.fvg} /></div>
-                <div><TrendBars t={r.trend} /></div>
-                <div><StatusPill s={r.status} /></div>
-                <div><ActionBtn a={r.action} /></div>
-              </div>
-            ))}
-
-            <div className="mt-3 flex items-center gap-6 text-[11px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-[oklch(0.78_0.2_150)]" strokeWidth={3} /> Van</span>
-              <span className="inline-flex items-center gap-1.5"><X className="h-3.5 w-3.5 text-[oklch(0.68_0.22_25)]" strokeWidth={3} /> Nincs</span>
-              <span className="inline-flex items-center gap-1.5"><CircleDot className="h-3.5 w-3.5 text-[oklch(0.78_0.17_75)]" /> Részleges</span>
-            </div>
-          </div>
-
-          {/* Bottom: alerts / chart / quick status */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.4fr_0.9fr] gap-4">
-            <div className="zz-card p-4">
-              <div className="flex items-center gap-2 text-[12px] font-bold tracking-[0.15em]">
-                <Bell className="h-4 w-4 text-[oklch(0.78_0.14_235)]" /> LEGUTÓBBI ALERT-ek
-              </div>
-              <ul className="mt-4 space-y-3 text-[12px]">
-                {[
-                  ["12:44","EUR/USD – Long setup forming","g"],
-                  ["12:41","GBP/USD – CHoCH detected","g"],
-                  ["12:38","USD/CHF – Short bias detected","r"],
-                  ["12:35","XAU/USD – FVG retest folyamatban","y"],
-                  ["12:31","USD/JPY – Várj retestre","y"],
-                ].map(([t,msg,c]) => (
-                  <li key={t} className="grid grid-cols-[52px_1fr] items-center gap-3">
-                    <span className={`font-bold ${c==="g"?"text-[oklch(0.78_0.2_150)]":c==="r"?"text-[oklch(0.7_0.22_25)]":"text-[oklch(0.85_0.17_75)]"}`}>{t}</span>
-                    <span className="text-foreground/90">{msg}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="zz-card p-4">
-              <p className="text-[12px] font-bold tracking-[0.15em]">
-                CHART ELŐNÉZET – <span className="text-[oklch(0.78_0.14_235)]">EUR/USD (H1)</span>
-              </p>
-              <div className="mt-3 h-[230px] rounded-lg bg-[oklch(0.14_0.03_250)] ring-1 ring-border relative overflow-hidden p-3">
-                <svg viewBox="0 0 400 220" className="h-full w-full">
-                  {/* candles */}
-                  {[
-                    [20,40,90,30,"r"],[35,60,110,50,"r"],[50,80,140,70,"r"],
-                    [65,90,150,85,"r"],[80,110,160,100,"g"],[95,120,150,110,"r"],
-                    [110,130,170,125,"r"],[125,140,180,135,"r"],[140,150,190,145,"g"],
-                    [155,140,180,135,"g"],[170,130,170,125,"g"],[185,120,160,115,"g"],
-                    [200,115,155,108,"g"],[215,108,150,100,"g"],[230,100,140,95,"g"],
-                  ].map(([x,h,l,c,col],i) => {
-                    const color = col === "g" ? "oklch(0.7 0.18 150)" : "oklch(0.65 0.22 25)";
-                    const top = Math.min(Number(h), Number(c));
-                    const bot = Math.max(Number(h), Number(c));
-                    return (
-                      <g key={i}>
-                        <line x1={Number(x)+4} x2={Number(x)+4} y1={Number(h)-15} y2={Number(l)+5} stroke={color} strokeWidth={1} />
-                        <rect x={Number(x)} y={top} width={9} height={Math.max(4, bot-top)} fill={color} />
-                      </g>
-                    );
-                  })}
-                  {/* CHoCH line */}
-                  <line x1="120" y1="115" x2="380" y2="115" stroke="oklch(0.96 0.01 250)" strokeDasharray="3 3" strokeWidth="1" />
-                  <text x="195" y="110" fill="oklch(0.96 0.01 250)" fontSize="10" fontWeight="700">CHoCH</text>
-                  {/* trend arrow */}
-                  <path d="M250,150 L320,90 L300,90 M320,90 L320,110" stroke="oklch(0.96 0.01 250)" strokeWidth="1.5" fill="none" strokeDasharray="4 3" />
-                </svg>
-                <div className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-md bg-[oklch(0.4_0.15_150/0.6)] px-3 py-1.5 ring-1 ring-[oklch(0.55_0.15_150/0.6)]">
-                  <span className="text-[11px] font-bold text-[oklch(0.9_0.18_150)]">FVG ZÓNA</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="zz-card p-4">
-              <p className="text-[12px] font-bold tracking-[0.15em]">GYORS STÁTUSZ</p>
-              <ul className="mt-4 space-y-3 text-[13px]">
-                {[
-                  ["Long setup", 3, "text-[oklch(0.78_0.2_150)]"],
-                  ["Short setup", 1, "text-[oklch(0.7_0.22_25)]"],
-                  ["Várj retestre", 2, "text-[oklch(0.85_0.17_75)]"],
-                  ["Nincs tiszta setup", 0, "text-muted-foreground"],
-                  ["Összes megfigyelt pár", 6, "text-[oklch(0.78_0.14_235)]"],
-                ].map(([k,v,c]) => (
-                  <li key={String(k)} className="flex items-center justify-between border-b border-border/40 pb-2 last:border-0">
-                    <span className={`font-bold ${c}`}>{k}</span>
-                    <span className={`font-extrabold ${c}`}>{v}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-        )}
+        {view === "daily" ? <DailyBriefPanel /> : <OverviewPanel />}
 
         {/* Right column */}
         <aside className="flex flex-col gap-4">
@@ -447,6 +321,132 @@ function Dashboard() {
           </div>
         </aside>
       </main>
+    </div>
+  );
+}
+
+/* ---------- Overview ---------- */
+
+function OverviewPanel() {
+  return (
+    <div className="flex flex-col gap-4 min-w-0">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <GaugeCard />
+        <SessionCard />
+        <RiskCard />
+        <NewsCard />
+      </div>
+
+      <div className="zz-card p-4">
+        <div className="grid grid-cols-[1.4fr_1fr_0.7fr_0.7fr_0.7fr_1.1fr_1.2fr_1.3fr] items-center gap-3 border-b border-border/60 pb-3 text-[11px] font-bold tracking-[0.18em] text-muted-foreground">
+          <div className="flex items-center gap-1.5"><span className="text-[oklch(0.78_0.14_235)]">▸</span> PÁR</div>
+          <div>HTF BIAS</div>
+          <div className="text-center">SWEEP</div>
+          <div className="text-center">CHoCH</div>
+          <div className="text-center">FVG</div>
+          <div>TREND ERŐ</div>
+          <div>STÁTUSZ</div>
+          <div>TEENDŐ</div>
+        </div>
+
+        {rows.map((r) => (
+          <div
+            key={r.pair}
+            className="grid grid-cols-[1.4fr_1fr_0.7fr_0.7fr_0.7fr_1.1fr_1.2fr_1.3fr] items-center gap-3 border-b border-border/40 py-3 last:border-0 hover:bg-[oklch(0.26_0.035_250/0.5)] transition rounded-md px-1"
+          >
+            <div className="flex items-center gap-2.5">
+              <Star className="h-4 w-4 fill-[oklch(0.78_0.17_75)] text-[oklch(0.78_0.17_75)]" />
+              <span className="text-[14px] font-bold">{r.pair}</span>
+            </div>
+            <div>{biasChip(r.bias)}</div>
+            <div className="flex justify-center"><MarkIcon m={r.sweep} /></div>
+            <div className="flex justify-center"><MarkIcon m={r.choch} /></div>
+            <div className="flex justify-center"><MarkIcon m={r.fvg} /></div>
+            <div><TrendBars t={r.trend} /></div>
+            <div><StatusPill s={r.status} /></div>
+            <div><ActionBtn a={r.action} /></div>
+          </div>
+        ))}
+
+        <div className="mt-3 flex items-center gap-6 text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-[oklch(0.78_0.2_150)]" strokeWidth={3} /> Van</span>
+          <span className="inline-flex items-center gap-1.5"><X className="h-3.5 w-3.5 text-[oklch(0.68_0.22_25)]" strokeWidth={3} /> Nincs</span>
+          <span className="inline-flex items-center gap-1.5"><CircleDot className="h-3.5 w-3.5 text-[oklch(0.78_0.17_75)]" /> Részleges</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.4fr_0.9fr] gap-4">
+        <div className="zz-card p-4">
+          <div className="flex items-center gap-2 text-[12px] font-bold tracking-[0.15em]">
+            <Bell className="h-4 w-4 text-[oklch(0.78_0.14_235)]" /> LEGUTÓBBI ALERT-ek
+          </div>
+          <ul className="mt-4 space-y-3 text-[12px]">
+            {[
+              ["12:44","EUR/USD – Long setup forming","g"],
+              ["12:41","GBP/USD – CHoCH detected","g"],
+              ["12:38","USD/CHF – Short bias detected","r"],
+              ["12:35","XAU/USD – FVG retest folyamatban","y"],
+              ["12:31","USD/JPY – Várj retestre","y"],
+            ].map(([t,msg,c]) => (
+              <li key={t} className="grid grid-cols-[52px_1fr] items-center gap-3">
+                <span className={`font-bold ${c==="g"?"text-[oklch(0.78_0.2_150)]":c==="r"?"text-[oklch(0.7_0.22_25)]":"text-[oklch(0.85_0.17_75)]"}`}>{t}</span>
+                <span className="text-foreground/90">{msg}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="zz-card p-4">
+          <p className="text-[12px] font-bold tracking-[0.15em]">
+            CHART ELŐNÉZET – <span className="text-[oklch(0.78_0.14_235)]">EUR/USD (H1)</span>
+          </p>
+          <div className="mt-3 h-[230px] rounded-lg bg-[oklch(0.14_0.03_250)] ring-1 ring-border relative overflow-hidden p-3">
+            <svg viewBox="0 0 400 220" className="h-full w-full">
+              {([
+                [20,40,90,30,"r"],[35,60,110,50,"r"],[50,80,140,70,"r"],
+                [65,90,150,85,"r"],[80,110,160,100,"g"],[95,120,150,110,"r"],
+                [110,130,170,125,"r"],[125,140,180,135,"r"],[140,150,190,145,"g"],
+                [155,140,180,135,"g"],[170,130,170,125,"g"],[185,120,160,115,"g"],
+                [200,115,155,108,"g"],[215,108,150,100,"g"],[230,100,140,95,"g"],
+              ] as Array<[number,number,number,number,string]>).map(([x,h,l,c,col],i) => {
+                const color = col === "g" ? "oklch(0.7 0.18 150)" : "oklch(0.65 0.22 25)";
+                const top = Math.min(h, c);
+                const bot = Math.max(h, c);
+                return (
+                  <g key={i}>
+                    <line x1={x+4} x2={x+4} y1={h-15} y2={l+5} stroke={color} strokeWidth={1} />
+                    <rect x={x} y={top} width={9} height={Math.max(4, bot-top)} fill={color} />
+                  </g>
+                );
+              })}
+              <line x1="120" y1="115" x2="380" y2="115" stroke="oklch(0.96 0.01 250)" strokeDasharray="3 3" strokeWidth="1" />
+              <text x="195" y="110" fill="oklch(0.96 0.01 250)" fontSize="10" fontWeight="700">CHoCH</text>
+              <path d="M250,150 L320,90 L300,90 M320,90 L320,110" stroke="oklch(0.96 0.01 250)" strokeWidth="1.5" fill="none" strokeDasharray="4 3" />
+            </svg>
+            <div className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-md bg-[oklch(0.4_0.15_150/0.6)] px-3 py-1.5 ring-1 ring-[oklch(0.55_0.15_150/0.6)]">
+              <span className="text-[11px] font-bold text-[oklch(0.9_0.18_150)]">FVG ZÓNA</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="zz-card p-4">
+          <p className="text-[12px] font-bold tracking-[0.15em]">GYORS STÁTUSZ</p>
+          <ul className="mt-4 space-y-3 text-[13px]">
+            {([
+              ["Long setup", 3, "text-[oklch(0.78_0.2_150)]"],
+              ["Short setup", 1, "text-[oklch(0.7_0.22_25)]"],
+              ["Várj retestre", 2, "text-[oklch(0.85_0.17_75)]"],
+              ["Nincs tiszta setup", 0, "text-muted-foreground"],
+              ["Összes megfigyelt pár", 6, "text-[oklch(0.78_0.14_235)]"],
+            ] as Array<[string, number, string]>).map(([k,v,c]) => (
+              <li key={k} className="flex items-center justify-between border-b border-border/40 pb-2 last:border-0">
+                <span className={`font-bold ${c}`}>{k}</span>
+                <span className={`font-extrabold ${c}`}>{v}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
