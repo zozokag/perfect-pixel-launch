@@ -376,6 +376,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
+        )}
 
         {/* Right column */}
         <aside className="flex flex-col gap-4">
