@@ -206,18 +206,22 @@ function Dashboard() {
         </div>
 
         <nav className="zz-card p-2 flex flex-col gap-1">
-          {sideItems.map(({ icon: Icon, label, active }) => (
-            <button
-              key={label}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] font-bold tracking-wider transition
-                ${active
-                  ? "bg-[oklch(0.3_0.05_250)] text-[oklch(0.78_0.14_235)] ring-1 ring-[oklch(0.45_0.08_240/0.5)]"
-                  : "text-muted-foreground hover:bg-[oklch(0.27_0.03_250)] hover:text-foreground"}`}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </button>
-          ))}
+          {sideItems.map(({ icon: Icon, label, key }) => {
+            const active = key !== null && view === key;
+            return (
+              <button
+                key={label}
+                onClick={() => key && setView(key)}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] font-bold tracking-wider transition
+                  ${active
+                    ? "bg-[oklch(0.3_0.05_250)] text-[oklch(0.78_0.14_235)] ring-1 ring-[oklch(0.45_0.08_240/0.5)]"
+                    : "text-muted-foreground hover:bg-[oklch(0.27_0.03_250)] hover:text-foreground"}`}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </button>
+            );
+          })}
         </nav>
 
         <div className="zz-card px-4 py-4">
