@@ -450,3 +450,164 @@ function Dashboard() {
     </div>
   );
 }
+
+/* ---------- Daily Brief ---------- */
+
+interface BriefPair {
+  symbol: string;
+  bias: string;
+  condition: string;
+  confidence: number;
+}
+interface DailyBrief {
+  last_updated: string;
+  market_bias: string;
+  macro_regime: string;
+  headline: string;
+  pairs: BriefPair[];
+  risk: {
+    market_risk: string;
+    event_risk: string;
+    recommended_exposure: string;
+  };
+}
+
+function biasTone(b: string) {
+  const v = b.toUpperCase();
+  if (v.includes("BULL")) return { cls: "text-[oklch(0.82_0.2_150)]", Icon: TrendingUp };
+  if (v.includes("BEAR")) return { cls: "text-[oklch(0.78_0.22_25)]", Icon: TrendingDown };
+  return { cls: "text-[oklch(0.85_0.17_75)]", Icon: Minus };
+}
+
+function DailyBriefPanel() {
+  const [brief, setBrief] = useState<DailyBrief | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/briefs/daily_brief_latest.json", { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) throw new Error("not ok");
+        return r.json();
+      })
+      .then((data) => { if (!cancelled) setBrief(data); })
+      .catch(() => { if (!cancelled) setError("Daily brief nem elérhető."); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (error) {
+    return (
+      <div className="zz-card p-10 flex flex-col items-center justify-center text-center gap-3">
+        <AlertTriangle className="h-10 w-10 text-[oklch(0.78_0.22_25)]" />
+        <p className="text-[15px] font-bold text-[oklch(0.85_0.17_75)]">{error}</p>
+        <p className="text-[12px] text-muted-foreground">Ellenőrizd a /briefs/daily_brief_latest.json fájlt.</p>
+      </div>
+    );
+  }
+
+  if (!brief) {
+    return (
+      <div className="zz-card p-10 text-center text-muted-foreground text-[13px]">Betöltés…</div>
+    );
+  }
+
+  const bias = biasTone(brief.market_bias);
+
+  return (
+    <div className="flex flex-col gap-4 min-w-0">
+      {/* Document header */}
+      <div className="zz-card p-6 border border-border/60">
+        <div className="flex items-start justify-between gap-4 border-b border-border/60 pb-4">
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.25em] text-[oklch(0.78_0.14_235)]">ZOZO SMARTFLOW</p>
+            <h1 className="mt-1 text-[22px] font-extrabold tracking-tight">DAILY MARKET BRIEF</h1>
+            <p className="mt-1 text-[11px] text-muted-foreground">Institutional FX & Macro Snapshot</p>
+          </div>
+          <img src={zozoLogo} alt="ZOZO" className="h-14 w-auto object-contain opacity-90" />
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
+          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-2.5">
+            <p className="font-bold tracking-[0.18em] text-muted-foreground flex items-center gap-1.5">
+              <Clock className="h-3 w-3" /> LAST UPDATED
+            </p>
+            <p className="mt-1 text-[13px] font-extrabold text-foreground">{brief.last_updated}</p>
+          </div>
+          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-2.5">
+            <p className="font-bold tracking-[0.18em] text-muted-foreground">MARKET BIAS</p>
+            <p className={`mt-1 text-[13px] font-extrabold flex items-center gap-1.5 ${bias.cls}`}>
+              <bias.Icon className="h-3.5 w-3.5" /> {brief.market_bias}
+            </p>
+          </div>
+          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-2.5">
+            <p className="font-bold tracking-[0.18em] text-muted-foreground">MACRO REGIME</p>
+            <p className="mt-1 text-[13px] font-extrabold text-[oklch(0.78_0.14_235)]">{brief.macro_regime}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Headline */}
+      <div className="zz-card p-5">
+        <p className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground">HEADLINE</p>
+        <p className="mt-2 text-[16px] leading-relaxed font-semibold text-foreground/95">
+          “{brief.headline}”
+        </p>
+      </div>
+
+      {/* Instrument cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {brief.pairs.slice(0, 4).map((p) => {
+          const tone = biasTone(p.bias);
+          return (
+            <div key={p.symbol} className="zz-card p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[15px] font-extrabold tracking-wide">{p.symbol}</span>
+                <span className={`inline-flex items-center gap-1 text-[11px] font-extrabold tracking-[0.15em] ${tone.cls}`}>
+                  <tone.Icon className="h-3.5 w-3.5" /> {p.bias}
+                </span>
+              </div>
+              <p className="mt-2 text-[12.5px] text-foreground/80 leading-relaxed">{p.condition}</p>
+              <div className="mt-3">
+                <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.18em] text-muted-foreground">
+                  <span>CONFIDENCE</span>
+                  <span className="text-foreground">{p.confidence}/10</span>
+                </div>
+                <div className="mt-1.5 h-1.5 w-full rounded-full bg-[oklch(0.22_0.03_250)] overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[oklch(0.55_0.15_240)] to-[oklch(0.78_0.18_150)]"
+                    style={{ width: `${Math.max(0, Math.min(10, p.confidence)) * 10}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Risk management */}
+      <div className="zz-card p-5">
+        <div className="flex items-center gap-2 text-[12px] font-bold tracking-[0.2em]">
+          <ShieldAlert className="h-4 w-4 text-[oklch(0.78_0.2_150)]" /> RISK MANAGEMENT
+        </div>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-[12px]">
+          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-3">
+            <p className="font-bold tracking-[0.18em] text-muted-foreground text-[10px]">MARKET RISK</p>
+            <p className="mt-1.5 text-[14px] font-extrabold text-[oklch(0.85_0.17_75)]">{brief.risk.market_risk}</p>
+          </div>
+          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-3">
+            <p className="font-bold tracking-[0.18em] text-muted-foreground text-[10px]">EVENT RISK</p>
+            <p className="mt-1.5 text-[14px] font-extrabold text-[oklch(0.78_0.22_25)]">{brief.risk.event_risk}</p>
+          </div>
+          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-3">
+            <p className="font-bold tracking-[0.18em] text-muted-foreground text-[10px]">RECOMMENDED EXPOSURE</p>
+            <p className="mt-1.5 text-[14px] font-extrabold text-[oklch(0.78_0.2_150)]">{brief.risk.recommended_exposure}</p>
+          </div>
+        </div>
+      </div>
+
+      <p className="text-center text-[10px] tracking-[0.25em] text-muted-foreground py-2">
+        © ZOZO SMARTFLOW — FOR INTERNAL USE ONLY
+      </p>
+    </div>
+  );
+}
