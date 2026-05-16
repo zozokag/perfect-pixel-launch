@@ -195,6 +195,7 @@ function NewsCard() {
 /* ---------- main ---------- */
 
 function Dashboard() {
+  const [view, setView] = useState<ViewKey>("overview");
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
