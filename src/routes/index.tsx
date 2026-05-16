@@ -21,14 +21,14 @@ export const Route = createFileRoute("/")({
 });
 
 /* ---------- helpers ---------- */
-const sideItems = [
-  { icon: Home, label: "ÁTTEKINTÉS", active: true },
-  { icon: Calendar, label: "ECONOMIC CALENDAR" },
-  { icon: Bell, label: "ALERT NAPLÓ" },
-  { icon: LineChart, label: "JELZÉSEK" },
-  { icon: Star, label: "ÉRTÉKELÉS" },
-  { icon: FileText, label: "NAPI ELEMZÉS" },
-  { icon: Settings, label: "BEÁLLÍTÁSOK" },
+const sideItems: { icon: typeof Home; label: string; key: ViewKey | null }[] = [
+  { icon: Home, label: "ÁTTEKINTÉS", key: "overview" },
+  { icon: Calendar, label: "ECONOMIC CALENDAR", key: null },
+  { icon: Bell, label: "ALERT NAPLÓ", key: null },
+  { icon: LineChart, label: "JELZÉSEK", key: null },
+  { icon: Star, label: "ÉRTÉKELÉS", key: null },
+  { icon: FileText, label: "NAPI ELEMZÉS", key: "daily" },
+  { icon: Settings, label: "BEÁLLÍTÁSOK", key: null },
 ];
 
 type Bias = "BULLISH" | "BEARISH" | "NEUTRAL";
