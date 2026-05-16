@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Home, Calendar, Bell, LineChart, Star, FileText, Settings,
   Globe, ShieldCheck, CalendarDays, Brain, Target, ShieldAlert,
   Send, Circle, Droplet, ArrowUpRight, BarChart3, LogIn,
-  Check, X, CircleDot,
+  Check, X, CircleDot, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock,
 } from "lucide-react";
 import zozoLogo from "@/assets/zozo-logo.png";
+
+type ViewKey = "overview" | "daily";
 
 export const Route = createFileRoute("/")({
   head: () => ({
