@@ -197,9 +197,9 @@ function NewsCard() {
 function Dashboard() {
   const [view, setView] = useState<ViewKey>("overview");
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen overflow-hidden flex">
       {/* Sidebar */}
-      <aside className="w-[230px] shrink-0 p-4 flex flex-col gap-4">
+      <aside className="w-[230px] shrink-0 p-4 flex flex-col gap-4 h-full overflow-y-auto zz-scroll-hide">
         <div className="zz-card px-4 py-5 flex flex-col items-center text-center">
           <img src={zozoLogo} alt="ZOZO SmartFlow" className="h-32 w-auto object-contain drop-shadow-[0_6px_22px_oklch(0.55_0.18_240/0.5)]" />
           <p className="mt-2 text-[11px] font-semibold tracking-[0.15em] text-muted-foreground">FX Market Brief</p>
@@ -249,11 +249,13 @@ function Dashboard() {
       </aside>
 
       {/* Center column */}
-      <main className="flex-1 p-4 grid gap-4 grid-cols-1 xl:grid-cols-[1fr_320px]">
-        {view === "daily" ? <DailyBriefPanel /> : <OverviewPanel />}
+      <main className="flex-1 p-4 grid gap-4 grid-cols-1 xl:grid-cols-[1fr_320px] h-full overflow-hidden min-h-0">
+        <div className="h-full min-h-0 overflow-y-auto zz-scroll-hide scroll-smooth pr-1">
+          {view === "daily" ? <DailyBriefPanel /> : <OverviewPanel />}
+        </div>
 
         {/* Right column */}
-        <aside className="flex flex-col gap-4">
+        <aside className="flex flex-col gap-4 h-full min-h-0 overflow-y-auto zz-scroll-hide">
           <div className="zz-card p-4">
             <div className="flex items-center gap-2 text-[12px] font-bold tracking-[0.15em]">
               <Brain className="h-4 w-4 text-[oklch(0.78_0.16_305)]" /> AI ÖSSZEGZÉS
