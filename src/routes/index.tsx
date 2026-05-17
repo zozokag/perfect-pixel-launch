@@ -451,32 +451,155 @@ function OverviewPanel() {
   );
 }
 
-/* ---------- Daily Brief ---------- */
+/* ---------- Daily Brief — Institutional FX Macro Brief ---------- */
 
 interface BriefPair {
   symbol: string;
+  price?: string;
   bias: string;
-  condition: string;
+  h4_bias?: string;
+  structure?: string;
+  liquidity?: string;
+  key_levels?: string;
+  bullish_scenario?: string;
+  bearish_scenario?: string;
+  no_trade_condition?: string;
   confidence: number;
+  condition?: string;
 }
+interface MetricItem { symbol: string; value: string; change?: string }
+interface PlaybookItem { name: string; trigger?: string; reaction?: string; expression?: string }
+interface VerdictRow { instrument: string; bias: string; condition?: string; risk?: string }
+
 interface DailyBrief {
+  brief_version?: string;
+  date?: string;
+  session?: string;
   last_updated: string;
   market_bias: string;
   macro_regime: string;
   headline: string;
+  market_environment?: { metrics?: MetricItem[]; regime_badges?: string[] };
+  macro_narrative?: Record<string, string>;
   pairs: BriefPair[];
+  playbook?: PlaybookItem[];
+  final_verdict_table?: VerdictRow[];
   risk: {
-    market_risk: string;
-    event_risk: string;
-    recommended_exposure: string;
+    market_risk?: string;
+    event_risk?: string;
+    overnight_risk?: string;
+    recommended_exposure?: string;
+    execution_style?: string;
+    instruments_to_avoid?: string;
+  };
+  final_verdict?: {
+    overall_market_bias?: string;
+    best_opportunity?: string;
+    most_dangerous_risk?: string;
+    instruments_to_avoid?: string;
+    trading_condition?: string;
+    highlight_note?: string;
   };
 }
 
 function biasTone(b: string) {
-  const v = b.toUpperCase();
+  const v = (b || "").toUpperCase();
   if (v.includes("BULL")) return { cls: "text-[oklch(0.82_0.2_150)]", Icon: TrendingUp };
   if (v.includes("BEAR")) return { cls: "text-[oklch(0.78_0.22_25)]", Icon: TrendingDown };
   return { cls: "text-[oklch(0.85_0.17_75)]", Icon: Minus };
+}
+
+function changeTone(c?: string) {
+  if (!c) return "text-muted-foreground";
+  if (c.trim().startsWith("-")) return "text-[oklch(0.78_0.22_25)]";
+  if (c.trim().startsWith("+")) return "text-[oklch(0.82_0.2_150)]";
+  return "text-muted-foreground";
+}
+
+/* Section wrapper — PDF-style with subtle border + numbered label */
+function ReportSection({
+  num, title, kicker, children,
+}: { num: string; title: string; kicker?: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-2xl border border-border/50 bg-[oklch(0.2_0.03_250)]/60 backdrop-blur-sm shadow-[0_0_0_1px_oklch(0.32_0.03_250/0.25),0_20px_50px_-30px_oklch(0_0_0/0.6)] overflow-hidden">
+      <header className="flex items-baseline justify-between gap-4 border-b border-border/40 px-7 py-4 bg-[oklch(0.17_0.03_250)]/70">
+        <div className="flex items-baseline gap-4 min-w-0">
+          <span className="text-[11px] font-bold tracking-[0.3em] text-[oklch(0.78_0.14_235)]">§ {num}</span>
+          <h2 className="text-[15px] font-extrabold tracking-[0.18em] text-foreground uppercase truncate">{title}</h2>
+        </div>
+        {kicker && <span className="text-[10px] tracking-[0.22em] text-muted-foreground uppercase shrink-0">{kicker}</span>}
+      </header>
+      <div className="px-7 py-6">{children}</div>
+    </section>
+  );
+}
+
+function NarrativeRow({ label, text }: { label: string; text?: string }) {
+  if (!text) return null;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-x-6 gap-y-1 py-3 border-b border-border/30 last:border-0">
+      <div className="text-[10.5px] font-bold tracking-[0.22em] text-muted-foreground uppercase pt-1">{label}</div>
+      <p className="text-[13.5px] leading-[1.75] text-foreground/90 max-w-[72ch]">{text}</p>
+    </div>
+  );
+}
+
+function PairCard({ p }: { p: BriefPair }) {
+  const tone = biasTone(p.bias);
+  return (
+    <article className="rounded-xl border border-border/50 bg-[oklch(0.19_0.03_250)]/80 p-6 flex flex-col gap-4 min-w-0">
+      <div className="flex items-start justify-between gap-3 pb-3 border-b border-border/40">
+        <div className="min-w-0">
+          <div className="text-[17px] font-extrabold tracking-wide">{p.symbol}</div>
+          {p.price && <div className="mt-0.5 text-[13px] font-mono text-foreground/80">{p.price}</div>}
+        </div>
+        <span className={`inline-flex items-center gap-1.5 text-[11px] font-extrabold tracking-[0.2em] ${tone.cls}`}>
+          <tone.Icon className="h-3.5 w-3.5" /> {p.bias}
+        </span>
+      </div>
+
+      <dl className="grid grid-cols-1 gap-3 text-[12.5px] leading-relaxed">
+        {[
+          ["H4 BIAS", p.h4_bias],
+          ["STRUCTURE", p.structure],
+          ["LIQUIDITY", p.liquidity],
+          ["KEY LEVELS", p.key_levels],
+        ].map(([k, v]) =>
+          v ? (
+            <div key={k as string} className="grid grid-cols-[110px_1fr] gap-3">
+              <dt className="text-[9.5px] font-bold tracking-[0.2em] text-muted-foreground pt-0.5">{k}</dt>
+              <dd className="text-foreground/90 break-words">{v}</dd>
+            </div>
+          ) : null
+        )}
+      </dl>
+
+      <div className="grid grid-cols-1 gap-2 text-[12px] leading-relaxed pt-2 border-t border-border/30">
+        {p.bullish_scenario && (
+          <p><span className="text-[9.5px] font-bold tracking-[0.2em] text-[oklch(0.82_0.2_150)] mr-2">BULLISH</span><span className="text-foreground/85">{p.bullish_scenario}</span></p>
+        )}
+        {p.bearish_scenario && (
+          <p><span className="text-[9.5px] font-bold tracking-[0.2em] text-[oklch(0.78_0.22_25)] mr-2">BEARISH</span><span className="text-foreground/85">{p.bearish_scenario}</span></p>
+        )}
+        {p.no_trade_condition && (
+          <p><span className="text-[9.5px] font-bold tracking-[0.2em] text-[oklch(0.85_0.17_75)] mr-2">NO TRADE</span><span className="text-foreground/85">{p.no_trade_condition}</span></p>
+        )}
+      </div>
+
+      <div className="pt-2">
+        <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.2em] text-muted-foreground">
+          <span>CONFIDENCE</span>
+          <span className="text-foreground">{p.confidence}/10</span>
+        </div>
+        <div className="mt-1.5 h-1 w-full rounded-full bg-[oklch(0.22_0.03_250)] overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-[oklch(0.55_0.15_240)] to-[oklch(0.78_0.18_150)]"
+            style={{ width: `${Math.max(0, Math.min(10, p.confidence)) * 10}%` }}
+          />
+        </div>
+      </div>
+    </article>
+  );
 }
 
 function DailyBriefPanel() {
@@ -486,10 +609,7 @@ function DailyBriefPanel() {
   useEffect(() => {
     let cancelled = false;
     fetch("/briefs/daily_brief_latest.json", { cache: "no-store" })
-      .then((r) => {
-        if (!r.ok) throw new Error("not ok");
-        return r.json();
-      })
+      .then((r) => { if (!r.ok) throw new Error("not ok"); return r.json(); })
       .then((data) => { if (!cancelled) setBrief(data); })
       .catch(() => { if (!cancelled) setError("Daily brief nem elérhető."); });
     return () => { cancelled = true; };
@@ -504,109 +624,218 @@ function DailyBriefPanel() {
       </div>
     );
   }
-
   if (!brief) {
-    return (
-      <div className="zz-card p-10 text-center text-muted-foreground text-[13px]">Betöltés…</div>
-    );
+    return <div className="zz-card p-10 text-center text-muted-foreground text-[13px]">Betöltés…</div>;
   }
 
   const bias = biasTone(brief.market_bias);
+  const env = brief.market_environment;
+  const nar = brief.macro_narrative ?? {};
+  const fv = brief.final_verdict;
 
   return (
-    <div className="flex flex-col gap-4 min-w-0">
-      {/* Document header */}
-      <div className="zz-card p-6 border border-border/60">
-        <div className="flex items-start justify-between gap-4 border-b border-border/60 pb-4">
-          <div>
-            <p className="text-[10px] font-bold tracking-[0.25em] text-[oklch(0.78_0.14_235)]">ZOZO SMARTFLOW</p>
-            <h1 className="mt-1 text-[22px] font-extrabold tracking-tight">DAILY MARKET BRIEF</h1>
-            <p className="mt-1 text-[11px] text-muted-foreground">Institutional FX & Macro Snapshot</p>
-          </div>
-          <img src={zozoLogo} alt="ZOZO" className="h-14 w-auto object-contain opacity-90" />
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
-          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-2.5">
-            <p className="font-bold tracking-[0.18em] text-muted-foreground flex items-center gap-1.5">
-              <Clock className="h-3 w-3" /> LAST UPDATED
-            </p>
-            <p className="mt-1 text-[13px] font-extrabold text-foreground">{brief.last_updated}</p>
-          </div>
-          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-2.5">
-            <p className="font-bold tracking-[0.18em] text-muted-foreground">MARKET BIAS</p>
-            <p className={`mt-1 text-[13px] font-extrabold flex items-center gap-1.5 ${bias.cls}`}>
-              <bias.Icon className="h-3.5 w-3.5" /> {brief.market_bias}
+    <div className="min-w-0 mx-auto w-full max-w-[1100px] flex flex-col gap-6 pb-12">
+      {/* === DOCUMENT HEADER === */}
+      <header className="rounded-2xl border border-border/60 bg-gradient-to-b from-[oklch(0.16_0.03_250)] to-[oklch(0.13_0.03_250)] px-8 py-8 shadow-[0_30px_80px_-40px_oklch(0_0_0/0.9)]">
+        <div className="flex items-start justify-between gap-6 border-b border-border/40 pb-6">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold tracking-[0.35em] text-[oklch(0.78_0.14_235)]">ZOZO SMARTFLOW</p>
+            <h1 className="mt-2 text-[26px] sm:text-[30px] font-extrabold tracking-tight leading-tight">
+              Institutional FX Macro Brief
+            </h1>
+            <p className="mt-2 text-[12px] tracking-[0.18em] text-muted-foreground uppercase">
+              ICT · Smart Money · Macro Confluence
             </p>
           </div>
-          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-2.5">
-            <p className="font-bold tracking-[0.18em] text-muted-foreground">MACRO REGIME</p>
-            <p className="mt-1 text-[13px] font-extrabold text-[oklch(0.78_0.14_235)]">{brief.macro_regime}</p>
+          <img src={zozoLogo} alt="ZOZO" className="h-16 w-auto object-contain opacity-90 shrink-0" />
+        </div>
+
+        <dl className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-[11px]">
+          {[
+            ["DATE", brief.date ?? brief.last_updated],
+            ["SESSION", brief.session ?? "—"],
+            ["BRIEF VERSION", brief.brief_version ?? "—"],
+            ["LAST UPDATED", brief.last_updated],
+          ].map(([k, v]) => (
+            <div key={k as string}>
+              <dt className="font-bold tracking-[0.22em] text-muted-foreground">{k}</dt>
+              <dd className="mt-1 text-[13px] font-extrabold text-foreground">{v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-7 grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-3">
+          <div className="rounded-lg ring-1 ring-border/50 bg-[oklch(0.2_0.03_250)]/70 px-4 py-3">
+            <p className="text-[10px] font-bold tracking-[0.22em] text-muted-foreground">MARKET BIAS</p>
+            <p className={`mt-1 text-[15px] font-extrabold flex items-center gap-2 ${bias.cls}`}>
+              <bias.Icon className="h-4 w-4" /> {brief.market_bias}
+            </p>
+          </div>
+          <div className="rounded-lg ring-1 ring-border/50 bg-[oklch(0.2_0.03_250)]/70 px-4 py-3">
+            <p className="text-[10px] font-bold tracking-[0.22em] text-muted-foreground">MACRO REGIME</p>
+            <p className="mt-1 text-[15px] font-extrabold text-[oklch(0.78_0.14_235)]">{brief.macro_regime}</p>
           </div>
         </div>
-      </div>
 
-      {/* Headline */}
-      <div className="zz-card p-5">
-        <p className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground">HEADLINE</p>
-        <p className="mt-2 text-[16px] leading-relaxed font-semibold text-foreground/95">
+        <blockquote className="mt-7 border-l-2 border-[oklch(0.78_0.14_235)] pl-5 text-[15px] leading-[1.8] text-foreground/95 italic max-w-[78ch]">
           “{brief.headline}”
-        </p>
-      </div>
+        </blockquote>
+      </header>
 
-      {/* Instrument cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {brief.pairs.slice(0, 4).map((p) => {
-          const tone = biasTone(p.bias);
-          return (
-            <div key={p.symbol} className="zz-card p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-[15px] font-extrabold tracking-wide">{p.symbol}</span>
-                <span className={`inline-flex items-center gap-1 text-[11px] font-extrabold tracking-[0.15em] ${tone.cls}`}>
-                  <tone.Icon className="h-3.5 w-3.5" /> {p.bias}
+      {/* === 1. MARKET ENVIRONMENT === */}
+      {env && (
+        <ReportSection num="01" title="Market Environment" kicker="Benchmarks & Regime">
+          {env.metrics && env.metrics.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border/40 rounded-lg overflow-hidden ring-1 ring-border/40">
+              {env.metrics.map((m) => (
+                <div key={m.symbol} className="bg-[oklch(0.19_0.03_250)] px-4 py-3">
+                  <p className="text-[9.5px] font-bold tracking-[0.22em] text-muted-foreground">{m.symbol}</p>
+                  <p className="mt-1 text-[15px] font-extrabold font-mono">{m.value}</p>
+                  {m.change && <p className={`mt-0.5 text-[11px] font-bold ${changeTone(m.change)}`}>{m.change}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+          {env.regime_badges && env.regime_badges.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {env.regime_badges.map((b) => (
+                <span key={b} className="inline-flex items-center px-3 py-1.5 text-[10.5px] font-bold tracking-[0.16em] uppercase rounded-md border border-[oklch(0.78_0.14_235)]/40 bg-[oklch(0.78_0.14_235)]/10 text-[oklch(0.85_0.12_235)]">
+                  {b}
                 </span>
+              ))}
+            </div>
+          )}
+        </ReportSection>
+      )}
+
+      {/* === 2. MACRO NARRATIVE === */}
+      {Object.keys(nar).length > 0 && (
+        <ReportSection num="02" title="Macro Narrative" kicker="Top-down context">
+          <div className="divide-y divide-border/30">
+            <NarrativeRow label="Regime"             text={nar.regime} />
+            <NarrativeRow label="Liquidity"          text={nar.liquidity} />
+            <NarrativeRow label="Fed"                text={nar.fed} />
+            <NarrativeRow label="ECB"                text={nar.ecb} />
+            <NarrativeRow label="BoJ"                text={nar.boj} />
+            <NarrativeRow label="USD Bias"           text={nar.usd_bias} />
+            <NarrativeRow label="Risk Appetite"      text={nar.risk_appetite} />
+            <NarrativeRow label="Dominant Narrative" text={nar.dominant_narrative} />
+            <NarrativeRow label="Narrative Risk"     text={nar.narrative_risk} />
+            <NarrativeRow label="Key Macro Trigger"  text={nar.key_macro_trigger} />
+          </div>
+        </ReportSection>
+      )}
+
+      {/* === 3. PAIR FOCUS === */}
+      <ReportSection num="03" title="Pair Focus" kicker="Smart Money Setups">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {brief.pairs.map((p) => <PairCard key={p.symbol} p={p} />)}
+        </div>
+      </ReportSection>
+
+      {/* === 4. PLAYBOOK === */}
+      {brief.playbook && brief.playbook.length > 0 && (
+        <ReportSection num="04" title="Playbook" kicker="Scenario tree">
+          <div className="grid grid-cols-1 gap-4">
+            {brief.playbook.map((s, i) => (
+              <div key={i} className="rounded-xl border border-border/40 bg-[oklch(0.19_0.03_250)]/70 p-5">
+                <div className="text-[12px] font-extrabold tracking-[0.18em] uppercase text-[oklch(0.78_0.14_235)]">{s.name}</div>
+                <dl className="mt-3 grid grid-cols-1 md:grid-cols-[110px_1fr] gap-x-5 gap-y-2 text-[13px] leading-relaxed">
+                  {s.trigger    && (<><dt className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground pt-0.5">TRIGGER</dt><dd className="text-foreground/90">{s.trigger}</dd></>)}
+                  {s.reaction   && (<><dt className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground pt-0.5">REACTION</dt><dd className="text-foreground/90">{s.reaction}</dd></>)}
+                  {s.expression && (<><dt className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground pt-0.5">EXPRESSION</dt><dd className="text-foreground/90">{s.expression}</dd></>)}
+                </dl>
               </div>
-              <p className="mt-2 text-[12.5px] text-foreground/80 leading-relaxed">{p.condition}</p>
-              <div className="mt-3">
-                <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.18em] text-muted-foreground">
-                  <span>CONFIDENCE</span>
-                  <span className="text-foreground">{p.confidence}/10</span>
+            ))}
+          </div>
+        </ReportSection>
+      )}
+
+      {/* === 5. FINAL TRADING VERDICT TABLE === */}
+      {brief.final_verdict_table && brief.final_verdict_table.length > 0 && (
+        <ReportSection num="05" title="Final Trading Verdict" kicker="Instrument matrix">
+          <div className="overflow-x-auto rounded-lg ring-1 ring-border/40">
+            <table className="w-full text-[12.5px] min-w-[560px]">
+              <thead>
+                <tr className="bg-[oklch(0.17_0.03_250)] text-muted-foreground">
+                  {["Instrument", "Bias", "Condition", "Risk"].map((h) => (
+                    <th key={h} className="text-left font-bold tracking-[0.18em] uppercase text-[10px] px-4 py-3">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {brief.final_verdict_table.map((r, i) => {
+                  const t = biasTone(r.bias);
+                  return (
+                    <tr key={i} className="border-t border-border/30 odd:bg-[oklch(0.19_0.03_250)]/40">
+                      <td className="px-4 py-3 font-extrabold">{r.instrument}</td>
+                      <td className={`px-4 py-3 font-bold ${t.cls}`}>{r.bias}</td>
+                      <td className="px-4 py-3 text-foreground/85">{r.condition}</td>
+                      <td className="px-4 py-3 text-foreground/85">{r.risk}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </ReportSection>
+      )}
+
+      {/* === 6. RISK MANAGEMENT === */}
+      <ReportSection num="06" title="Risk Management" kicker="Exposure framework">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[
+            ["MARKET RISK", brief.risk.market_risk, "text-[oklch(0.85_0.17_75)]"],
+            ["EVENT RISK", brief.risk.event_risk, "text-[oklch(0.78_0.22_25)]"],
+            ["OVERNIGHT RISK", brief.risk.overnight_risk, "text-[oklch(0.78_0.14_235)]"],
+            ["RECOMMENDED EXPOSURE", brief.risk.recommended_exposure, "text-[oklch(0.78_0.2_150)]"],
+            ["EXECUTION STYLE", brief.risk.execution_style, "text-foreground"],
+            ["INSTRUMENTS TO AVOID", brief.risk.instruments_to_avoid, "text-foreground"],
+          ].map(([k, v, c]) =>
+            v ? (
+              <div key={k as string} className="rounded-lg ring-1 ring-border/40 bg-[oklch(0.19_0.03_250)]/70 px-4 py-3.5">
+                <p className="text-[9.5px] font-bold tracking-[0.22em] text-muted-foreground">{k}</p>
+                <p className={`mt-1.5 text-[13.5px] font-extrabold leading-snug ${c as string}`}>{v}</p>
+              </div>
+            ) : null
+          )}
+        </div>
+      </ReportSection>
+
+      {/* === 7. FINAL VERDICT === */}
+      {fv && (
+        <ReportSection num="07" title="Final Verdict" kicker="Desk summary">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            {[
+              ["OVERALL MARKET BIAS", fv.overall_market_bias],
+              ["BEST OPPORTUNITY", fv.best_opportunity],
+              ["MOST DANGEROUS RISK", fv.most_dangerous_risk],
+              ["INSTRUMENTS TO AVOID", fv.instruments_to_avoid],
+              ["TRADING CONDITION", fv.trading_condition],
+            ].map(([k, v]) =>
+              v ? (
+                <div key={k as string} className="border-b border-border/30 pb-3">
+                  <p className="text-[10px] font-bold tracking-[0.22em] text-muted-foreground">{k}</p>
+                  <p className="mt-1.5 text-[14px] font-bold text-foreground/95 leading-relaxed max-w-[60ch]">{v}</p>
                 </div>
-                <div className="mt-1.5 h-1.5 w-full rounded-full bg-[oklch(0.22_0.03_250)] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-[oklch(0.55_0.15_240)] to-[oklch(0.78_0.18_150)]"
-                    style={{ width: `${Math.max(0, Math.min(10, p.confidence)) * 10}%` }}
-                  />
-                </div>
+              ) : null
+            )}
+          </div>
+
+          {fv.highlight_note && (
+            <div className="mt-6 rounded-xl border border-[oklch(0.85_0.17_75)]/40 bg-[oklch(0.85_0.17_75)]/10 px-6 py-5 flex items-start gap-4">
+              <AlertTriangle className="h-6 w-6 text-[oklch(0.85_0.17_75)] shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold tracking-[0.28em] text-[oklch(0.85_0.17_75)]">NO CLEAR EDGE / WAIT</p>
+                <p className="mt-1.5 text-[14px] font-semibold text-foreground/95 leading-relaxed max-w-[72ch]">{fv.highlight_note}</p>
               </div>
             </div>
-          );
-        })}
-      </div>
+          )}
+        </ReportSection>
+      )}
 
-      {/* Risk management */}
-      <div className="zz-card p-5">
-        <div className="flex items-center gap-2 text-[12px] font-bold tracking-[0.2em]">
-          <ShieldAlert className="h-4 w-4 text-[oklch(0.78_0.2_150)]" /> RISK MANAGEMENT
-        </div>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-[12px]">
-          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-3">
-            <p className="font-bold tracking-[0.18em] text-muted-foreground text-[10px]">MARKET RISK</p>
-            <p className="mt-1.5 text-[14px] font-extrabold text-[oklch(0.85_0.17_75)]">{brief.risk.market_risk}</p>
-          </div>
-          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-3">
-            <p className="font-bold tracking-[0.18em] text-muted-foreground text-[10px]">EVENT RISK</p>
-            <p className="mt-1.5 text-[14px] font-extrabold text-[oklch(0.78_0.22_25)]">{brief.risk.event_risk}</p>
-          </div>
-          <div className="rounded-md bg-[oklch(0.18_0.03_250)] ring-1 ring-border/60 px-3 py-3">
-            <p className="font-bold tracking-[0.18em] text-muted-foreground text-[10px]">RECOMMENDED EXPOSURE</p>
-            <p className="mt-1.5 text-[14px] font-extrabold text-[oklch(0.78_0.2_150)]">{brief.risk.recommended_exposure}</p>
-          </div>
-        </div>
-      </div>
-
-      <p className="text-center text-[10px] tracking-[0.25em] text-muted-foreground py-2">
-        © ZOZO SMARTFLOW — FOR INTERNAL USE ONLY
+      <p className="text-center text-[10px] tracking-[0.3em] text-muted-foreground py-3">
+        © ZOZO SMARTFLOW — INSTITUTIONAL FX MACRO BRIEF · FOR INTERNAL USE ONLY
       </p>
     </div>
   );

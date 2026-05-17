@@ -1,17 +1,141 @@
 {
+  "brief_version": "v2.4",
+  "date": "2025-05-19",
+  "session": "London → NY Overlap",
   "last_updated": "2025-05-19 12:45 (GMT+1)",
   "market_bias": "BULLISH USD WEAKNESS",
   "macro_regime": "Risk-On / Liquidity Expansion",
   "headline": "USD gyengeség folytatódik a CPI előtt — EUR és GBP párok strukturális erőt mutatnak, XAU új lokális csúcs felé.",
+
+  "market_environment": {
+    "metrics": [
+      { "symbol": "DXY",     "value": "104.82", "change": "-0.31%" },
+      { "symbol": "US10Y",   "value": "4.41%",  "change": "-3 bps" },
+      { "symbol": "VIX",     "value": "13.84",  "change": "+0.6%" },
+      { "symbol": "XAU/USD", "value": "2418.7", "change": "+0.9%" },
+      { "symbol": "EUR/USD", "value": "1.0871", "change": "+0.28%" },
+      { "symbol": "GBP/USD", "value": "1.2702", "change": "+0.35%" },
+      { "symbol": "USD/JPY", "value": "155.41", "change": "-0.22%" },
+      { "symbol": "SPX",     "value": "5305.2", "change": "+0.4%" }
+    ],
+    "regime_badges": ["Risk-On", "USD Weakness", "Compressed Volatility", "Liquidity Expansion"]
+  },
+
+  "macro_narrative": {
+    "regime": "Late-cycle risk-on a CPI előtt; dollarra nyomás, részvénypiac stabil, kötvényhozamok lassan csúsznak lefelé.",
+    "liquidity": "Globális likviditás bővül, RRP állomány csökken, USD funding feszültség alacsony.",
+    "fed": "Piac két vágást áraz 2025-re; data-dependent retorika, CPI a következő trigger.",
+    "ecb": "Júniusi vágás közel 100%-ban beárazva; Lagarde óvatos forward guidance.",
+    "boj": "JPY gyenge, intervenciós kockázat 158 felett emelkedik, BoJ verbálisan aktív.",
+    "usd_bias": "Strukturálisan bearish rövid távon — DXY a 104.50 támasz alatt jelentős gyengülés jöhet.",
+    "risk_appetite": "Emelkedett — SPX ATH közelében, hitelszpredek szűkek, FX carry erős.",
+    "dominant_narrative": "Soft-landing + disinflation újra árazódik; USD funding könnyű, kockázati eszközök vonzók.",
+    "narrative_risk": "Egy felfelé meglepő CPI gyorsan átírja a Fed-pályát és USD short squeeze-t indíthat.",
+    "key_macro_trigger": "US CPI 14:30 GMT+1 — konszenzus core m/m +0.3%."
+  },
+
   "pairs": [
-    { "symbol": "EUR/USD", "bias": "BULLISH", "condition": "HTF CHoCH + FVG retest zónában", "confidence": 8 },
-    { "symbol": "GBP/USD", "bias": "BULLISH", "condition": "Liquidity sweep után CHoCH M15", "confidence": 7 },
-    { "symbol": "USD/CHF", "bias": "BEARISH", "condition": "Sweep + FVG fent, short bias", "confidence": 7 },
-    { "symbol": "XAU/USD", "bias": "BULLISH", "condition": "Bullish continuation, FVG retest folyamatban", "confidence": 9 }
+    {
+      "symbol": "EUR/USD",
+      "price": "1.0871",
+      "bias": "BULLISH",
+      "h4_bias": "Bullish — HH/HL szerkezet a 1.0810 sweep óta",
+      "structure": "HTF CHoCH megerősítve, M15 BOS folyamatban",
+      "liquidity": "Asia high sweepelve, EU session likviditás 1.0890 felett",
+      "key_levels": "Support: 1.0840 / 1.0810 — Resistance: 1.0905 / 1.0935",
+      "bullish_scenario": "FVG retest 1.0855 zónában, majd folytatás 1.0905 → 1.0935 felé.",
+      "bearish_scenario": "1.0905 reject + M15 CHoCH lefelé visszahozhat 1.0840-ig.",
+      "no_trade_condition": "Ha CPI előtt 1.0855–1.0890 sávban range-el, nincs setup.",
+      "confidence": 8,
+      "condition": "HTF CHoCH + FVG retest zónában"
+    },
+    {
+      "symbol": "GBP/USD",
+      "price": "1.2702",
+      "bias": "BULLISH",
+      "h4_bias": "Bullish — liquidity sweep után tiszta CHoCH",
+      "structure": "M15 BOS megvolt, jelenleg pullback fázis",
+      "liquidity": "1.2660 lows sweepelve, fenti likviditás 1.2745 felett",
+      "key_levels": "Support: 1.2680 / 1.2655 — Resistance: 1.2745 / 1.2780",
+      "bullish_scenario": "1.2685 OB retest után continuation 1.2745 → 1.2780.",
+      "bearish_scenario": "1.2655 alá zárás invalidálja a setupot, célzóna 1.2620.",
+      "no_trade_condition": "CPI előtti 20 perces ablakban kerülni.",
+      "confidence": 7,
+      "condition": "Liquidity sweep után CHoCH M15"
+    },
+    {
+      "symbol": "USD/JPY",
+      "price": "155.41",
+      "bias": "BEARISH",
+      "h4_bias": "Bearish bias — H4 FVG fent, intervenciós kockázat",
+      "structure": "Range top reject, M15 CHoCH lefelé",
+      "liquidity": "156.00 equal highs sweepelve, lent 154.80 likviditás",
+      "key_levels": "Support: 154.80 / 154.20 — Resistance: 155.80 / 156.20",
+      "bullish_scenario": "Csak 156.20 fölött, momentum visszatérés esetén.",
+      "bearish_scenario": "155.55 OB reject → 154.80, breakdownnál 154.20.",
+      "no_trade_condition": "156+ intervenciós zónában long pozíció kerülendő.",
+      "confidence": 7,
+      "condition": "Sweep + FVG fent, short bias"
+    },
+    {
+      "symbol": "XAU/USD",
+      "price": "2418.7",
+      "bias": "BULLISH",
+      "h4_bias": "Strong bullish — egymást követő HH-k",
+      "structure": "H4 continuation, M15 pullback FVG-be",
+      "liquidity": "2400 round number védve, fenti target 2430 / 2450",
+      "key_levels": "Support: 2408 / 2395 — Resistance: 2430 / 2450",
+      "bullish_scenario": "FVG retest 2410 zónában → continuation 2430 → 2450.",
+      "bearish_scenario": "2395 alá zárás bearish flip, 2378 felé nyitva.",
+      "no_trade_condition": "Ha 2410–2425 között szűk range marad.",
+      "confidence": 9,
+      "condition": "Bullish continuation, FVG retest folyamatban"
+    }
   ],
+
+  "playbook": [
+    {
+      "name": "Scenario 1 — USD Weakness Continuation",
+      "trigger": "CPI in-line vagy soft (core m/m ≤ 0.3%).",
+      "reaction": "DXY 104.50 alá törik, yields lefelé, equity bid.",
+      "expression": "Long EUR/USD 1.0855, Long XAU 2410, Short USD/JPY 155.55."
+    },
+    {
+      "name": "Scenario 2 — Hot CPI Surprise",
+      "trigger": "Core CPI m/m ≥ 0.4%, yields felugranak.",
+      "reaction": "USD short squeeze, gold reject, risk-off intraday.",
+      "expression": "Short EUR/USD 1.0905 reject, Long USD/JPY breakout 156.20."
+    },
+    {
+      "name": "Scenario 3 — No Reaction / Choppy",
+      "trigger": "CPI in-line + range-bound reakció.",
+      "reaction": "Likviditásvadászat mindkét irányba, fakeoutok.",
+      "expression": "Stand aside, kizárólag M15 confirmation után scalp."
+    }
+  ],
+
+  "final_verdict_table": [
+    { "instrument": "EUR/USD", "bias": "BULLISH", "condition": "FVG retest 1.0855",          "risk": "Közepes" },
+    { "instrument": "GBP/USD", "bias": "BULLISH", "condition": "OB retest 1.2685",           "risk": "Közepes" },
+    { "instrument": "USD/JPY", "bias": "BEARISH", "condition": "Reject 155.55 / 156.20",     "risk": "Magas (intervenció)" },
+    { "instrument": "XAU/USD", "bias": "BULLISH", "condition": "FVG retest 2410 continuation","risk": "Alacsony-közepes" }
+  ],
+
   "risk": {
     "market_risk": "KÖZEPES",
     "event_risk": "MAGAS — USD CPI 14:30 (GMT+1)",
-    "recommended_exposure": "Max 1% / trade, napi cap 3%"
+    "overnight_risk": "ALACSONY — nincs jelentős ázsiai esemény",
+    "recommended_exposure": "Max 1% / trade, napi cap 3%",
+    "execution_style": "Confirmation-based, M15 CHoCH / BOS után",
+    "instruments_to_avoid": "USD/CHF (alacsony konfidencia), USD/CAD (rangebound)"
+  },
+
+  "final_verdict": {
+    "overall_market_bias": "BULLISH RISK / BEARISH USD",
+    "best_opportunity": "XAU/USD long continuation FVG retestre",
+    "most_dangerous_risk": "Hot CPI nyomtatás → USD short squeeze + gold reject",
+    "instruments_to_avoid": "USD/CHF, USD/CAD",
+    "trading_condition": "Selective — csak A+ setupok CPI előtt",
+    "highlight_note": "NO CLEAR EDGE az első 15 percben a CPI release után — WAIT for confirmation."
   }
 }
